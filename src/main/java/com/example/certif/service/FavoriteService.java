@@ -59,12 +59,11 @@ public class FavoriteService {
     @Transactional
     public void removeFavorite(Long userId, Long certificateId) {
 // 삭제 전 존재 여부 확인
-        boolean exists = favoriteRepository.existsByUserIdAndCertificateId(userId, certificateId);
-        if (!exists) {
-            throw new RuntimeException("삭제 대상 즐겨찾기가 존재하지 않습니다.");
-        }
+        long deletedCount = favoriteRepository.deleteByUserIdAndCertificateId(userId, certificateId);
 
-        // 삭제 + 즉시 flush
+        if(deletedCount == 0){
+            throw new RuntimeException("해당 즐겨찾기가 존재하지 않습니다.");
+        }
         favoriteRepository.deleteByUserIdAndCertificateId(userId, certificateId);
         favoriteRepository.flush(); // 트랜잭션 내 즉시 DB 반영
         }
